@@ -1,1 +1,39 @@
-<my-app>loading</my-app>
+<!DOCTYPE html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+</head>
+<body ng-app="ngchangedemo">
+    <div ng-controller="ngchangedemoController">
+   
+      <div class="form-group" ng-init="changed=0">
+        <div class="col-sm-offset-2 col-sm-10 well">
+        <h3>A demo of ng-change</h3>
+          <div class="checkbox">
+            <label>
+              <select ng-change="chkChanged()" class="form-control" ng-model="selectDemo">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              </select>
+              <div><b>Total number of times options selected</b> {{changed}} </div>
+            </label>
+          </div>
+        </div>
+      </div>
+        </div>
+        
+<script>
+    var app = angular.module("ngchangedemo", []);
+    app.controller('ngchangedemoController', ['$scope', function ($scope) {
+        $scope.isChange = false;
+        
+        $scope.chkChanged = function () {
+            $scope.isChange = true;
+            $scope.changed = $scope.changed + 1;
+        }
+    }]);
+</script>
+</body>
+</html>
+

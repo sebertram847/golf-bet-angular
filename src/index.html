@@ -8,7 +8,7 @@
    
       <div class="form-group" ng-init="changed=0">
         <div class="col-sm-offset-1 col-sm-8 well">
-        <h3>Select teams:</h3>
+        <!--<h3>Select teams:</h3>
           <div class="checkbox">
             <label>
               <select ng-change="chkChanged()" multiple="yes" class="form-control" ng-model="selectTeam1">
@@ -32,7 +32,7 @@
               <option>Turner</option>
               </select>
               <div><b>Team 2: </b> {{selectTeam2}} </div>
-              <div><b>Amount Bet by Team2:</b> {{selectTeam2.length * (amountforbackBet + amountperBet + amountforoverBet)}} </div>
+              <div><b>Amount Bet by Team2:</b> {{selectTeam2.length * (amountforbackBet + amountperBet +  amountforoverBet)}} </div>
             </label>
             <label>
               <select ng-change="chkChanged()" multiple="yes" class="form-control" ng-model="selectTeam3">
@@ -46,25 +46,22 @@
               <div><b>Team 3: </b> {{selectTeam3}} </div>
               <div><b>Amount Bet by Team3</b> {{selectTeam3.length * (amountforbackBet + amountperBet + amountforoverBet)}} </div>
             </label>
-          </div>
+          </div>-->
         <h3>Select front winners</h3>
           <div class="checkbox">
             <label>
-              <select ng-options="player for player in players" ng-change="chkChanged()" multiple="yes" class="form-control" ng-model="selectFront">
+              <select ng-options="player[0] for player in players" ng-change="chkFront()" multiple="yes" class="form-control" ng-model="selectFront">
               </select>
               <div><b>Front Winners Payout: </b> {{totalPayout}} </div>
               <div><b>Who splits the front payout:</b> {{selectFront}} </div>
+              <div><b>Index front payout:</b> {{windex}} </div>
               <div><b>Total Front Pot:</b> {{totalfrontBet}} </div>
             </label>
           </div>
            <h3>Select back winners</h3>
           <div class="checkbox">
             <label>
-              <select ng-change="chkBack()" multiple="yes" class="form-control" ng-model="selectBack">
-              <option selected>DRAW</option>
-              <option>{{selectTeam1}}</option>
-              <option>{{selectTeam2}}</option>
-              <option>{{selectTeam3}}</option>
+              <select ng-options="player[0] for player in players" ng-change="chkBack()" multiple="yes" class="form-control" ng-model="selectBack">
               </select>
               <div><b>Back Winners Payout: </b> {{totalbackBet}} </div>
               <div><b>Who splits the back payout:</b> {{selectBack}} </div>
@@ -74,11 +71,7 @@
           <h3>Select Overall winners</h3>
           <div class="checkbox">
             <label>
-              <select ng-change="chkOver()" multiple="yes" class="form-control" ng-model="selectOver">
-              <option selected>DRAW</option>
-              <option>{{selectTeam1}}</option>
-              <option>{{selectTeam2}}</option>
-              <option>{{selectTeam3}}</option>
+              <select ng-options="player[0] for player in players" ng-change="chkOver()" multiple="yes" class="form-control" ng-model="selectOver">
               </select>
               <div><b>Overall Winners Payout: </b> {{totaloverBet}} </div>
               <div><b>Who splits the overall payout:</b> {{selectOver}} </div>
@@ -88,7 +81,8 @@
            <h3>Day winners:</h3>
             <label>
               <table border="1"><th>Player</th><th>Net</th>
-              <tr><td>{{players[0]}}</td><td></td></tr>
+              <tr ng-repeat="player in players">
+                <td  ng-repeat="winnings in player">{{winnings}}</td></tr>
               </table>
             </label>
         </div>
@@ -99,16 +93,33 @@
     var app = angular.module("ngchangedemo", []);
     app.controller('ngchangedemoController', ['$scope', function ($scope) {
         $scope.isChange = false;
-        $scope.players = ["Craig", "Doc", "Jim", "Lee", "Shana", "Turner"];
-                
-        $scope.chkChanged = function () {
+        $scope.players = [];
+        $scope.players[0] = ["Craig",0];
+        $scope.players[1] = ["Doc",0];
+        $scope.players[2] = ["Jim",0];
+        $scope.players[3] = ["Lee",0];
+        $scope.players[4] = ["Shana",0];
+        $scope.players[5] = ["Turner",0]; 
+
+        $scope.chkFront = function () {
             $scope.isChange = true;
             if ($scope.selectFront == "DRAW") { 
               $scope.amountperBet = 0;
             } else { $scope.amountperBet = 2;
             } 
-            $scope.totalfrontBet = ($scope.selectFront.length) * $scope.amountperBet
+            $scope.totalfrontBet = ($scope.selectFront.length) * $scope.amountperBet;
             $scope.totalPayout = $scope.totalfrontBet;
+            for (i=0; i < $scope.selectFront.length; i++) {
+             console.log($scope.selectFront.length);
+              for (j=0; j < 6; j++) {
+                if ($scope.players[j][0] == $scope.selectFront[i][0]) {
+                  console.log($scope.players[j][0] + ' gets $2' );
+                  $scope.players[j][1] = 2; 
+             } 
+              }
+              
+            }
+            $scope.winnings = $scope.selectFront[0][0]; 
         }
             $scope.chkBack = function () {
               $scope.isChange = true;
@@ -116,14 +127,15 @@
               $scope.amountforbackBet = 0;
               } else { $scope.amountforbackBet = 2;
               }
-              $scope.totalbackBet = ($scope.selectTeam1.length + $scope.selectTeam2.length + $scope.selectTeam3.length) * $scope.amountforbackBet
+              $scope.totalbackBet = ($scope.selectBack.length) * $scope.amountforbackBet; 
             }
             $scope.chkOver = function () {
-              if ($scope.selectBack == "DRAW") {
+              $scope.isChange = true;
+              if ($scope.selectOver == "DRAW") {
               $scope.amountforoverBet = 0;
               } else { $scope.amountforoverBet = 2;
               }
-              $scope.totaloverBet = ($scope.selectTeam1.length + $scope.selectTeam2.length + $scope.selectTeam3.length) * $scope.amountforoverBet
+              $scope.totaloverBet = ($scope.selectOver.length) * $scope.amountforoverBet;
             }
     }]);
 </script>
